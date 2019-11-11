@@ -21,7 +21,7 @@ function(input, output) {
   }
   
   bar <-data.frame(x,y)
-  bar<-filter(bar,bar$x %in% c(input$checkGroup))
+  #ba   r<-filter(bar,bar$x %in% c(input$checkGroup))
   
   
   # Fill in the spot we created for a plot
@@ -30,6 +30,8 @@ function(input, output) {
       geom_bar(stat = "identity", aes(fill = x), legend = FALSE)
     p+theme(axis.text.x = element_text(size = 10, angle = 90))
   })
-  return(l)
+ # return(l)
 }
+
+
 
