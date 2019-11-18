@@ -75,6 +75,24 @@ shinyUI(navbarPage("PA Well picker", id = "nav", inverse = TRUE,
     #   )
     # End of Second tab  
   
+  ,tabPanel("EUM",
+            sidebarLayout(
+              sidebarPanel(
+                selectInput("FundInterface", "Choose a Fund InterfaceType:",
+                            choices = FundInterfaces),
+                selectInput("Scope", "Choose a Scope:",
+                            choices = Scopes),
+                selectInput("Period", "Choose a Period:",
+                            choices = Periods),
+                checkboxGroupInput("show_Interfaces", "Choose a flow InterfaceType to show:",
+                                   choiceNames = FlowInterfaces, choiceValues = FlowInterfaces, selected = NULL)
+              ),
+              mainPanel(
+                tableOutput("eum")
+              )
+            )
+  ) 
+  
   
   )
 )

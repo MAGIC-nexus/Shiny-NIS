@@ -1,4 +1,15 @@
-function(input, output) {
+# library(magrittr)
+# library(shinyjs)
+# library(logging)
+# 
+# basicConfig()
+# 
+# options(shiny.error = function() { 
+#   logging::logerror(sys.calls() %>% as.character %>% paste(collapse = ", ")) })
+# 
+# 
+
+function(input, output, session) {
   
   #PieChart
   output$PiePlot <- renderPlot({
@@ -42,6 +53,18 @@ pie
     p = ggplot(bar, aes(x,y)) +
       geom_bar(stat = "identity", aes(fill = x), legend = FALSE)
     p+theme(axis.text.x = element_text(size = 10, angle = 90))
+  })
+  
+  
+  output$eum<- renderTable({
+    data <- filter(data, data$Scope == input$Scope)
+    eumflow <- filter(data, Interface %in% input$show_Interfaces)
+    eumfund <- filter(data, data$Interface == input$FundInterface)
+    eum <- merge(x = eumflow,y = eumfund, by = "Processor")
+    eum$Valueeum <- eum$Value.x/eum$Value.y
+    eum <- eum%>%select(Processor, Valueeum, Interface.x)%>% spread(Interface.x,Valueeum)
+    eum <- tibble::rowid_to_column(eum, "ID")
+    eum
   })
   
   }
