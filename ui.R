@@ -17,7 +17,7 @@ shinyUI(navbarPage("PA Well picker", id = "nav", inverse = TRUE,
                    
   #First tab with pie chart         
   tabPanel("Pie chart by level and Interface",
-             
+  
     #fluidPage(
         
       # Application title
@@ -78,21 +78,66 @@ shinyUI(navbarPage("PA Well picker", id = "nav", inverse = TRUE,
   ,tabPanel("EUM",
             sidebarLayout(
               sidebarPanel(
+                # TODO INTRODUCIR ESTA VARIABLE EN EL EUM
+                numericInput("Population", "Population", 100000),
                 selectInput("FundInterface", "Choose a Fund InterfaceType:",
                             choices = FundInterfaces),
-                selectInput("Scope", "Choose a Scope:",
+                selectInput("ScopeChoice", "Choose a Scope:",
                             choices = Scopes),
-                selectInput("Period", "Choose a Period:",
+                selectInput("ScenarioChoice", "Choose a Scenario:",
+                            choices = Scenarios),
+                selectInput("PeriodChoice", "Choose a Period:",
                             choices = Periods),
+                selectInput("SystemChoice", "Choose a System:",
+                            choices = Systems),
                 checkboxGroupInput("show_Interfaces", "Choose a flow InterfaceType to show:",
-                                   choiceNames = FlowInterfaces, choiceValues = FlowInterfaces, selected = NULL)
+                                   choiceNames = FlowInterfaces, choiceValues = FlowInterfaces, selected = "Biofuel")
               ),
+              
               mainPanel(
                 tableOutput("eum")
               )
             )
-  ) 
-  
+  ) #end second tab   
+  # ,tabPanel("EUM2",
+  #           sidebarLayout(
+  #             sidebarPanel(
+  #               # TODO INTRODUCIR ESTA VARIABLE EN EL EUM 
+  #               #TODO utilizar fluid row https://shiny.rstudio.com/gallery/basic-datatable.html
+  #               numericInput("Population", "Population", 100000),
+  #               selectInput("FundInterface", "Choose a Fund InterfaceType:",
+  #                           choices = FundInterfaces),
+  #               selectInput("Scope", "Choose a Scope:",
+  #                           choices = Scopes),
+  #               selectInput("Period", "Choose a Period:",
+  #                           choices = Periods),
+  #               checkboxGroupInput("show_Interfaces", "Choose a flow InterfaceType to show:",
+  #                                  choiceNames = FlowInterfaces, choiceValues = FlowInterfaces, selected = NULL)
+  #             ),
+  #             
+  #             mainPanel(
+  #               tableOutput("eum")
+  #             )
+  #           )
+  # ) #end second tab
+  # 
+  # Third tab
+  ,tabPanel("Tree",
+            sidebarLayout(
+              sidebarPanel(
+                # TODO INTRODUCIR ESTA VARIABLE EN EL EUM
+                #TODO utilizar fluid row https://shiny.rstudio.com/gallery/basic-datatable.html
+                selectInput("Scope2", "Choose a Scope:",
+                            choices = Scopes),
+                selectInput("Period2", "Choose a Period:",
+                            choices = Periods)
+              ),
+
+              mainPanel(
+                collapsibleTreeOutput("Tree")
+              )
+            )
+  ) #end Third tab
   
   )
 )
