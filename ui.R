@@ -53,7 +53,7 @@ shinyUI(navbarPage("PA Well picker", id = "nav", inverse = TRUE,
     #         selectInput("scenario", "Choose a Scenario:",
     #                     choices = Scenarios),
     #         selectInput("period", "Choose a Period:",
-    #                     choices = Periods),
+    #                     choices = Periods), 
     #         selectInput("processor", "Choose a Processor:",
     #                     choices = Processors),
     #         checkboxInput("log_10","apply log10 to data",
@@ -94,8 +94,8 @@ shinyUI(navbarPage("PA Well picker", id = "nav", inverse = TRUE,
                                    choiceNames = FlowInterfaces, choiceValues = FlowInterfaces, selected = "Biofuel")
               ),
               
-              mainPanel(
-                tableOutput("eum")
+                mainPanel(
+                  tableOutput("eum")
               )
             )
   ) #end second tab   

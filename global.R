@@ -7,6 +7,7 @@
   library(dplyr)
   library(tidyr)
   library("readxl")
+  library("collapsibleTree")
 #LE <- read.csv("OUTPUTS/local_eum.csv")
 data <- read_excel("OUTPUTS/flow_graph_solution.xlsx")
 data$Period<-as.numeric(data$Period)

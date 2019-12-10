@@ -61,18 +61,25 @@ function(input, output) {
   
   
   output$eum<- renderTable({
-    df <- filter(data, data$Scenario == input$ScenarioChoice, data$Scope == input$ScopeChoice, data$System == input$SystemChoice, data$Period == input$PeriodChoice)
+    df<-filter(data,data$Scope == input$ScopeChoice, data$Scenario == input$ScenarioChoice , data$Period == input$PeriodChoice, data$System == input$SystemChoice)
     eumflow <- filter(df, Interface %in% input$show_Interfaces, )
-    eumfund <- filter(df, data$Interface == input$FundInterface)
+    eumfund <- filter(df, df$Interface == input$FundInterface)
+    
     eum <- merge(x = eumflow,y = eumfund, by = "Processor")
     eum$Valueeum <- eum$Value.x/eum$Value.y
     eum$Valuepop<-eum$Value.x/input$Population
-    eumInterface <- eum%>%select(Processor, Valueeum, Interface.x)%>% spread(Interface.x,Valueeum)
-    #eumpop<-eum%>%select(Processor, Valuepop, Interface.x)%>% spread(Interface.x,Valuepop)
-    # eum <- tibble::rowid_to_column(eum, "ID")
-    # merge(eumpop,eum, by = Processor)
-    eumInterface
-    browser()
+    
+    eum$InterfaceUnit<-paste(paste(eum$Interface.x,eum$Interface.y,sep = "/"),paste(eum$Unit.x,eum$Unit.y,sep = "/"),sep=" ")
+    eumInterface <- eum%>%select(Processor, Valueeum, InterfaceUnit)%>% spread(InterfaceUnit,Valueeum)
+
+    
+    eumpop<-eum%>%select(Processor, Valuepop, Interface.x)%>% spread(Interface.x,Valuepop)
+    colnamesEumpop<-paste(colnames(eumpop)[-1], "cap", sep = "/")
+    eumpop<-`colnames<-`(eumpop,c("Processor",colnamesEumpop))
+    
+    
+    eum <- merge(eumpop,eumInterface, by = "Processor")
+    eum
   })
   
   
