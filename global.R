@@ -8,8 +8,14 @@
   library(tidyr)
   library("readxl")
   library("collapsibleTree")
-#LE <- read.csv("OUTPUTS/local_eum.csv")
-data <- read_excel("OUTPUTS/flow_graph_solution.xlsx")
+  library(data.table)
+  library(excelR)
+  library("DT")
+
+
+data <- read_excel("~/Documentos/Shiny/OUTPUTS/flow_graph_solution_Biodiesel_last.xlsx") #caso Biofuel versión de juan con jerarquía por sistemas
+# data <- read_excel("~/Documentos/Shiny/OUTPUTS/flow_graph_solution_caso_materiales.xlsx") #caso Raul de Industrials solo año 2018 y paises be y at
+# data <- read_excel("~/Documentos/Shiny/OUTPUTS/flow_graph_solution_GC.xlsx") #caso Violeta con jerarquía por fincas y jeararquía de interface type de agua.
 data$Period<-as.numeric(data$Period)
 Scenarios <- as.vector(unique(data$Scenario))
 Periods<- as.vector(unique(data$Period))
@@ -24,10 +30,13 @@ Fund<- filter(data, data$RoegenType == "Fund" | data$RoegenType == "fund")
 FlowInterfaces<- as.vector(unique(Flow$Interface))
 FundInterfaces <- as.vector(unique(Fund$Interface))
 
+  
+  
+  #Deprecated
 # for (i in names(LE)){
 #   if (grepl("Output",i,fixed = TRUE)){
 #     LE[i] = -LE[i]
-#   }
+#   } 
 # }
 # 
 # int <-  c("Chemical", "Crop")
