@@ -1,5 +1,5 @@
   rm(list = ls())
-  setwd("~/Documentos/shiny-NIS")
+  #setwd("~/Documentos/shiny-NIS")
   library(dplyr)
   library(ggplot2)
   library(stringr)
