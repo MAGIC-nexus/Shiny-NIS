@@ -22,6 +22,10 @@ function(input, output) {
     if (is.null(inFile))
       return(NULL)
     df <- read.csv(inFile$datapath, header = TRUE,sep = input$separator)
+    if (length(df$Conflict) != 0){
+      df<-filter(df, df$Conflict != "Dismissed")
+    }
+    # df <- read_xlsx(inFile$datapath)
     df$Value <- as.numeric(df$Value)
     return(df)
   })
@@ -131,11 +135,10 @@ function(input, output) {
   output$PiePlotSystem <- renderPlot({
     if (input$act==0)
       return()
-    #TODO  % Values
-    
-
+    #TODO  % Values 
     data<-df_products_upload()
     df <- filter(data,data$Scenario == input$scenario2 & data$Period == input$period2  & data$Interface == input$interface2, data$Scope == input$scope2)
+    #df$valper <- round(df$Value/sum(df$Value)*100, digits = 3)
     plt <- ggplot (df, aes( x = "" ,  y = Value, fill = System)) + geom_bar(width = 1, stat = "identity")
     pie <- plt + coord_polar("y", start=0)
     pie
@@ -232,9 +235,7 @@ function(input, output) {
 
   eum<-reactive({
     data<-df_products_upload()
-    cat(class(data))
     df<-filter(data,data$Scope == input$ScopeChoice, data$Scenario == input$ScenarioChoice , data$Period == input$PeriodChoice, data$System == input$SystemChoice)
-    cat(class(df))
     # TODO needed?:
     # if (length(df$Conflict) != 0){
     #   df<-filter(df, df$Conflict != "Dismissed")
@@ -265,7 +266,6 @@ function(input, output) {
     eum<-eum[order(eum$Level),]
     
   })
-
 
 
   # TAB 5 EUM 1 -----
@@ -347,7 +347,7 @@ function(input, output) {
   #   #   df<-filter(df, df$Conflict != "Dismissed")
   #   # }
   #   # eumflow <- filter(df, Interface %in% input$show_Interfaces, )
-  #   # eumfund <- filter(df, df$Interface == input$FundInterface)
+  #   # eumfund <- filter(df, df$Interftace == input$FundInterface)
   #   #
   #   # eum <- merge(x = eumflow,y = eumfund, by = "Processor")
   #   # eum$Valueeum <- eum$Value.x/eum$Value.y
@@ -378,7 +378,37 @@ function(input, output) {
   #   bp
   #
   # })
+  
+  
+  # TAB 8 INDICATORS ----
+  #Reactive input
+  output$indicator = renderUI({
+    eum <- eum()
+    ind <- colnames(eum[setdiff(names(eum), c("Processor","Interface_Unit","Value", "Level"))])
+    selectInput("indicator", "Choose a indicator:",
+                            choices = ind)
+    
+  })
+  output$LevelIndicator = renderUI({
+    eum<-eum()
+    Levels<-as.vector(unique(eum$Level))
+    selectInput("LevelIndicator", "Choose a level to analize:",
+                choices = Levels)
+    
+  })
 
+  
+  #plot
+
+  output$gaugePlot <- renderPlot({
+    if (input$act==0)
+      return()
+    eum <- eum()
+    eumlevel<-filter(eum,eum$Level == input$LevelIndicator)
+    eumindicator<- eumlevel[c("Processor", input$indicator)]
+    gg.gauge(eumindicator,breaks = c(0,input$break2,input$break3,100))
+    #TODO problem displaying text.. bad visualization of text...
+  }, height = 400, width = 800 ) #this one seems to not change anything
 
   # TAB 7 TREE WITH QUANTITIES -----
   #outputs

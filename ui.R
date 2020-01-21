@@ -23,11 +23,14 @@ shinyUI(navbarPage("MuSIASEM data visualizations", id = "nav", inverse = TRUE,
                               'text/csv',
                               'text/comma-separated-values',
                               '.csv'
+                              # ".xlsx"
                             )),
                   radioButtons("separator","Separator: ",choices = c(";",",",":"), selected=";",inline=TRUE),
                   actionButton("act","click to update dataset input"),
-                  br()
-                  
+                  br(),
+                  p("Choose your flow_graph_solution.csv and your separator in your csv file (usally ',') 
+                                When the table is displayed properly click the botton ' 
+                                click to update dataset input in order to navigate through the others tabs")
                 ),
                 mainPanel(
                   DT::dataTableOutput("sample_table")
@@ -54,7 +57,9 @@ shinyUI(navbarPage("MuSIASEM data visualizations", id = "nav", inverse = TRUE,
             uiOutput('level'),
             #selectInput("interface", "Choose an Interface:",
             #            choices = Interfaces),
-            uiOutput('interface')
+            uiOutput('interface'),
+            br(),
+            p("This pieplot shows the contribution of the selected interface ( eg: water, LU..etc) to each processor of the specified level. Scenario Scope and Period needs to be chosen aswell ")
 
           ),
           mainPanel(
@@ -80,7 +85,9 @@ shinyUI(navbarPage("MuSIASEM data visualizations", id = "nav", inverse = TRUE,
                uiOutput("period2"),
                # selectInput("interface2", "Choose an Interface:",
                #             choices = Interfaces)
-               uiOutput("interface2")
+               uiOutput("interface2"),
+               br(),
+               p("This pieplot shows the contribution of the selected interface ( eg: water, LU..etc) to each System. Scenario Scope and Period needs to be chosen aswell ")
 
              ),
              mainPanel(
@@ -95,6 +102,8 @@ shinyUI(navbarPage("MuSIASEM data visualizations", id = "nav", inverse = TRUE,
   ,tabPanel("Pie chart by Processors and Interface",
             sidebarLayout(
               sidebarPanel(
+                p("This pieplot shows the contribution of the selected interface ( eg: water, LU..etc) comparing a group of processor shoosen by the user. Scenario Scope and Period needs to be chosen aswell "),
+                
 # 
 #                 selectInput("scenario3", "Choose a Scenario:",
 #                             choices = Scenarios),
@@ -111,6 +120,7 @@ shinyUI(navbarPage("MuSIASEM data visualizations", id = "nav", inverse = TRUE,
                 uiOutput("period3"),
                 uiOutput("interface3"),
                 uiOutput("ProcessorsChoice")
+
 
               ),
               mainPanel(
@@ -153,12 +163,13 @@ shinyUI(navbarPage("MuSIASEM data visualizations", id = "nav", inverse = TRUE,
     #   )
     # End of Second tab
 
-# TAB 5 EUM -----
-  #New tab EUM
+# New tab EUM/EPM excelformat -----
+  #
   #TODO use fluid row https://shiny.rstudio.com/gallery/basic-datatable.html
   ,tabPanel("EUM",
             sidebarLayout(
               sidebarPanel(
+                p("by choosing The interface types (flow types) to show,the fund interface type   and tying population a End use matrix or Enviroment Pressure Matrix will be show as an excel table"),
                 numericInput("Population", "Population", 100000),
                 # selectInput("FundInterface", "Choose a Fund InterfaceType:",
                 #             choices = FundInterfaces,selected = FundInterfaces[1]),
@@ -172,12 +183,16 @@ shinyUI(navbarPage("MuSIASEM data visualizations", id = "nav", inverse = TRUE,
                 #             choices = Systems, selected = Systems[1]),
                 # checkboxGroupInput("show_Interfaces", "Choose a flow InterfaceType to show:",
                 #                    choiceNames = FlowInterfaces, choiceValues = FlowInterfaces, selected = Interfaces[1])
+
                 uiOutput("FundInterface"),
                 uiOutput("ScopeChoice"),
                 uiOutput("ScenarioChoice"),
                 uiOutput("PeriodChoice"),
                 uiOutput("SystemChoice"),
-                uiOutput("show_Interfaces")
+                uiOutput("show_Interfaces"),
+                p("by choosing the indicaror and level the user will be able to compare the same indicator in that level. Only indicators shoosen in EUM tab will be able to choose. The use can aswell customize zones in the gauge plot ")
+                
+
               ),
 
                 mainPanel(
@@ -187,7 +202,32 @@ shinyUI(navbarPage("MuSIASEM data visualizations", id = "nav", inverse = TRUE,
                   
               )
             )
-  ) #end tab
+  ) #end 
+
+
+# New tab with indicators plot  -----
+
+#TODO use fluid row https://shiny.rstudio.com/gallery/basic-datatable.html
+,tabPanel("INDICATORS",
+          sidebarLayout(
+            sidebarPanel(
+              p("by choosing The interface types (flow types) to show,the fund interface type   and tying population a End use matrix or Environment Pressure Matrix will be show as an excel table"),
+            
+              uiOutput("indicator"),
+              uiOutput("LevelIndicator"),
+              numericInput("break2", "red Zone", 30),
+              numericInput("break3", "Yellow Zone", 70)
+            ),
+            
+            mainPanel(
+              plotOutput("gaugePlot", width = "100%")
+            )
+          )
+) #end 
+
+
+
+
 
 
   # box plot (no in use) ----
@@ -231,7 +271,9 @@ shinyUI(navbarPage("MuSIASEM data visualizations", id = "nav", inverse = TRUE,
                 # selectInput("Period2", "Choose a Period:",
                 #             choices = Periods)
                 uiOutput("ScopeTree"),
-                uiOutput("PeriodTree")
+                uiOutput("PeriodTree"),
+                br(),
+                p("this tree plot shows processor hierarchy")
               ),
 
               mainPanel(
@@ -254,8 +296,10 @@ shinyUI(navbarPage("MuSIASEM data visualizations", id = "nav", inverse = TRUE,
                 h3(textOutput("Unit")),
                 uiOutput("ScopeTree2"),
                 uiOutput("PeriodTree2"),
-                uiOutput("InterfaceTree2")
+                uiOutput("InterfaceTree2"),
                 #uiOutput("UnitTree2")
+                br(),
+                p("this tree plot shows processor hierarchy and by choosing interface type the quantities will be represented by the size of nodes. if hover the values will be displayed")
               ),
 
               mainPanel(
