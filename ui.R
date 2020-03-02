@@ -40,7 +40,7 @@ shinyUI(navbarPage("MuSIASEM data visualizations", id = "nav", inverse = TRUE,
      #end of Tab                
            
      # New tab with pie chart Levels-Interfaces ----
-  ,tabPanel("Pie chart by level and Interface",
+  ,tabPanel("Bar chart by level and Interface",
           sidebarLayout(
           sidebarPanel(
             #selectInput("scenario", "Choose a Scenario:",
@@ -71,7 +71,7 @@ shinyUI(navbarPage("MuSIASEM data visualizations", id = "nav", inverse = TRUE,
     #end of Tab
 
   # New tab with pie chart Systems-Interfaces -----
-  ,tabPanel("Pie chart by System and Interface",
+  ,tabPanel("Bar chart by System and Interface",
            sidebarLayout(
              sidebarPanel(
                # selectInput("scenario2", "Choose a Scenario:",
@@ -99,7 +99,7 @@ shinyUI(navbarPage("MuSIASEM data visualizations", id = "nav", inverse = TRUE,
   #end of Tab
 
   #New tab with pie chart  Processots-Interfaces -----
-  ,tabPanel("Pie chart by Processors and Interface",
+  ,tabPanel("Bar chart by Processors and Interface",
             sidebarLayout(
               sidebarPanel(
                 p("This pieplot shows the contribution of the selected interface ( eg: water, LU..etc) comparing a group of processor shoosen by the user. Scenario Scope and Period needs to be chosen aswell "),
@@ -118,7 +118,8 @@ shinyUI(navbarPage("MuSIASEM data visualizations", id = "nav", inverse = TRUE,
                 uiOutput("scenario3"),
                 uiOutput("scope3"),
                 uiOutput("period3"),
-                uiOutput("interface3"),
+                # uiOutput("interface3"),
+                uiOutput("InterfacesChoice"),
                 uiOutput("ProcessorsChoice")
 
 
@@ -134,7 +135,7 @@ shinyUI(navbarPage("MuSIASEM data visualizations", id = "nav", inverse = TRUE,
 
 
 
-    # New tab Var Chart (not in use) ----
+    # New tab Bar Chart (not in use) ----
     # ,tabPanel("Plot",
     #     sidebarLayout(
     #       sidebarPanel(
@@ -196,10 +197,11 @@ shinyUI(navbarPage("MuSIASEM data visualizations", id = "nav", inverse = TRUE,
               ),
 
                 mainPanel(
-                  #tableOutput("eum") # FORMATO 1
+                  # tableOutput("eum") # FORMATO 1
                   #DT::dataTableOutput("eum") # FORMATO 2
                   excelOutput("eum") #FORMATO EXCEL
-                  
+                  # renderRpivotTable("eum") #TODO donsn't work
+                
               )
             )
   ) #end 
@@ -215,8 +217,10 @@ shinyUI(navbarPage("MuSIASEM data visualizations", id = "nav", inverse = TRUE,
             
               uiOutput("indicator"),
               uiOutput("LevelIndicator"),
-              numericInput("break2", "red Zone", 30),
-              numericInput("break3", "Yellow Zone", 70)
+              numericInput("break2", "red Zone", 0.5),
+              numericInput("break3", "Yellow Zone", 0.7),
+              numericInput("max", "max value", 1),
+              numericInput("min", "min value", 0)
             ),
             
             mainPanel(
@@ -226,8 +230,22 @@ shinyUI(navbarPage("MuSIASEM data visualizations", id = "nav", inverse = TRUE,
 ) #end 
 
 
+# New tab with grouped bar char indicator -----
 
-
+,tabPanel("INDICATORS BARCHART",
+          sidebarLayout(
+            sidebarPanel(
+              p("by choosing The interface types (flow types) to show,the fund interface type   and tying population a End use matrix or Environment Pressure Matrix will be show as an excel table"),
+              
+              uiOutput("indicatorbar"),
+                uiOutput("Processorbar")
+            ),
+            
+            mainPanel(
+              plotOutput("BarChartIndicator", width = "100%")
+            )
+          )
+) #end 
 
 
   # box plot (no in use) ----

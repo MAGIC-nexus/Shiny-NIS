@@ -1,5 +1,6 @@
   rm(list = ls())
   #setwd("~/Documentos/shiny-NIS")
+  library(shiny)
   library(dplyr)
   library(ggplot2)
   library(stringr)
@@ -12,6 +13,8 @@
   library(excelR)
   library("DT")
   library(flexdashboard)
+  library("rpivotTable")
+
   
 # old input format
 # data$Period<-as.numeric(data$Period)
@@ -29,7 +32,8 @@
 # FundInterfaces <- as.vector(unique(Fund$Interface))
  
 gg.gauge <- function(eum,breaks=values) {
-  rescale <- function(x) (x-min(x))/(max(x) - min(x)) * 100
+  # rescale <- function(x) (x-min(x))/(max(x) - min(x)) * 100
+  rescale <- function(x) x* 100
   require(ggplot2)
     get.poly <- function(a,b,l = l,r1=0.5,r2=1.0) {
     th.start <- pi*(1-a/l)
@@ -41,15 +45,16 @@ gg.gauge <- function(eum,breaks=values) {
     }
   l <- breaks[length(breaks)]
   eumind<-(eum[setdiff(names(eum), "Processor")])
-  pos<-round(as.vector(unlist(eumind)),digits = 3)
+  pos<-round(as.vector(unlist(eumind)),digits = 6)
   posper<-rescale(pos)
+  breaks<-rescale(breaks)
   g<- ggplot()+
     geom_polygon(data=get.poly(breaks[1],breaks[2],l=l),aes(x,y),fill="red")+
     geom_polygon(data=get.poly(breaks[2],breaks[3],l=l),aes(x,y),fill="gold")+
     geom_polygon(data=get.poly(breaks[3],breaks[4],l=l),aes(x,y),fill="forestgreen")
-  for (b in posper){
-    g<- g + geom_polygon(data=get.poly(b-l*0.005,b+l*0.005,0.02,l =l),aes(x,y))
-  }
+    for (b in posper){
+      g<- g + geom_polygon(data=get.poly(b-l*0.005,b+l*0.005,0.02,l =l),aes(x,y))
+    }
   g +
     # Breaks Label:
     # geom_text(data=as.data.frame(breaks), size=3, fontface="bold", vjust=0,

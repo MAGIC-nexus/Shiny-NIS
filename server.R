@@ -37,7 +37,7 @@ function(input, output) {
   })
   
   
-  # TAB 2 FIRST PIE -------
+  # TAB 2 FIRST BAR PLOT -------
   # INPUTS: 
   
   output$scenario = renderUI({
@@ -78,7 +78,7 @@ function(input, output) {
   
 
   
-  #PieChart Level
+  # PieChart Level-----
   
   output$PiePlot <- renderPlot({
     if (input$act==0)
@@ -90,9 +90,11 @@ function(input, output) {
     df <- filter(data,data$Scenario == input$scenario & data$Period == input$period & data$Level == input$level & data$Interface == input$interface, data$Scope == input$scope)
     df$per<-round(df$Value/sum(df$Value)*100, digits = 3)
     df$names_per <-paste(df$Processor,df$per,"%", sep = " ")
-    plt <- ggplot (df, aes( x = "" ,  y = Value, fill = names_per)) + geom_bar(width = 1, stat = "identity")
-    pie <- plt + coord_polar("y", start=0)
-    pie
+    # plt <- ggplot (df, aes( x = "" ,  y = Value, fill = names_per)) + geom_bar(width = 1, stat = "identity")
+    plt <- ggplot (df, aes( x = Processor ,  y = Value)) + geom_bar( stat = "identity", fill = "blue") + 
+      labs(title = "Inrterface value", y = unique(df$Unit))
+    # pie <- plt + coord_polar("y", start=0)
+    plt
   })
 
   
@@ -131,7 +133,7 @@ function(input, output) {
 
 
   
-  #PieChart System
+  #PieChart System----
   output$PiePlotSystem <- renderPlot({
     if (input$act==0)
       return()
@@ -139,9 +141,12 @@ function(input, output) {
     data<-df_products_upload()
     df <- filter(data,data$Scenario == input$scenario2 & data$Period == input$period2  & data$Interface == input$interface2, data$Scope == input$scope2)
     #df$valper <- round(df$Value/sum(df$Value)*100, digits = 3)
-    plt <- ggplot (df, aes( x = "" ,  y = Value, fill = System)) + geom_bar(width = 1, stat = "identity")
-    pie <- plt + coord_polar("y", start=0)
-    pie
+    # plt <- ggplot (df, aes( x = "" ,  y = Value, fill = System)) + geom_bar(width = 1, stat = "identity")
+    # pie <- plt + coord_polar("y", start=0)
+    # pie
+    plt <- ggplot (df, aes( x = System ,  y = Value)) + geom_bar( stat = "identity", fill = "blue") + 
+      labs(title = "Inrterface value", y = unique(df$Unit))
+    plt
   })
   
 
@@ -169,33 +174,50 @@ function(input, output) {
   })
   
   
-  
-  output$interface3 = renderUI({
-    datos<-df_products_upload()
-    Interfaces<- as.vector(unique(datos$Interface))
-    selectInput('interface3', "Choose an Interface:", Interfaces)
-  })
-  
+  # 
+  # output$interface3 = renderUI({
+  #   datos<-df_products_upload()
+  #   Interfaces<- as.vector(unique(datos$Interface))
+  #   selectInput('interface3', "Choose an Interface:", Interfaces)
+  # })
   output$ProcessorsChoice = renderUI({
     datos<-df_products_upload()
     Processors<- as.vector(unique(datos$Processor))
     checkboxGroupInput("ProcessorsChoice", "Processors to compare:",
                        choiceNames = Processors, choiceValues = Processors, selected = Processors[1])
   })
+  
+  output$InterfacesChoice = renderUI({
+    datos<-df_products_upload()
+    Interfaces<- as.vector(unique(datos$Interface))
+    checkboxGroupInput("InterfacesChoice", "Interfaces to compare:",
+                       choiceNames = Interfaces, choiceValues = Interfaces, selected = Interfaces[1])
+  })
 
-  #PieChart Processors
+  #PieChart Processors------
   output$PiePlotProcessors <- renderPlot({
     if (input$act==0)
       return()
-    #TODO  % Values
     data<-df_products_upload()  
-    df <- filter(data,data$Scenario == input$scenario3 &  data$Period == input$period3  &  data$Interface == input$interface3, data$Scope == input$scope3)
+    df <- filter(data,data$Scenario == input$scenario3 &  data$Period == input$period3, data$Scope == input$scope3)
     df <- filter(df, Processor %in% input$ProcessorsChoice, )
+    df <- filter(df, Interface %in% input$InterfacesChoice, )
     df$per<-round(df$Value/sum(df$Value)*100, digits = 3)
     df$names_per <-paste(df$Processor,df$per,"%", sep = " ")
-    plt <- ggplot (df, aes( x = "" ,  y = Value, fill = names_per)) + geom_bar(width = 1, stat = "identity")
-    pie <- plt + coord_polar("y", start=0)
-    pie
+    # plt <- ggplot (df, aes( x = "" ,  y = Value, fill = names_per)) + geom_bar(width = 1, stat = "identity")
+    # pie <- plt + coord_polar("y", start=0)
+    # pie
+    # TODO try to represents levels aswell better only allow to reppresent interfaces wilth same units
+    UnitList<- unique(df$Unit)
+  
+    validate(
+      need(length(UnitList)==1, "Your interface selection should have the same unit")
+    )
+      
+    
+    plt <- ggplot (df, aes( x = Processor ,  y = Value, fill = Interface)) + geom_bar( position="dodge", stat = "identity") + 
+      labs(title = "Inrterface value", y = unique(df$Unit))
+    plt
 
   })
 
@@ -232,7 +254,7 @@ function(input, output) {
   #     geom_bar(stat = "identity", aes(fill = x), legend = FALSE)
   #   p+theme(axis.text.x = element_text(size = 10, angle = 90))
   # })
-
+  # EUM/EPM Reactive Data frame  ----
   eum<-reactive({
     data<-df_products_upload()
     df<-filter(data,data$Scope == input$ScopeChoice, data$Scenario == input$ScenarioChoice , data$Period == input$PeriodChoice, data$System == input$SystemChoice)
@@ -333,10 +355,13 @@ function(input, output) {
   
   #TAB 6 EUM FORMATO EXCEL ----
 
-  output$eum<-  renderExcel({
+  output$eum<-  renderRpivotTable({
     if (input$act==0)
       return()
     excelTable(data = eum())
+   # rpivotTable(data = eum()   ,  rows = "Processor",cols="Level",
+   # vals = "Value", aggregatorName = "Sum", rendererName = "Table",
+   # width="100%", height="500px")
   })
 
 
@@ -398,17 +423,53 @@ function(input, output) {
   })
 
   
-  #plot
+  # #plot
+  # 
+  # output$gaugePlot <- renderPlot({
+  #   if (input$act==0)
+  #     return()
+  #   eum <- eum()
+  #   eumlevel<-filter(eum,eum$Level == input$LevelIndicator)
+  #   eumindicator<- eumlevel[c("Processor", input$indicator)]
+  #   gg.gauge(eumindicator,breaks = c(input$min,input$break2,input$break3,input$max))
+  #   #TODO problem displaying text.. bad visualization of text...
+  # }, height = 400, width = 800 ) #this one seems to not change anything
+  # 
+  # # TAB 9 INDICATORS bar plot ----
+  # #Reactive input
+  # output$indicatorbar = renderUI({
+  #   eum <- eum()
+  #   View(eum)
+  #   ind <- colnames(eum[setdiff(names(eum), c("Processor","Interface_Unit","Value", "Level"))])
+  #   View(ind)
+  #   checkboxGroupInput("indicatorbar", "Choose a indicator",
+  #                      choiceNames = ind, choiceValues = ind, selected = ind[1])
+  # })
+  # 
+  # 
+  # output$Processorbar = renderUI({
+  #   eum <- eum()
+  #   checkboxGroupInput("Processorbar", "Choose a Prcessors",
+  #                      choiceNames = eum$Processor, choiceValues = eum$Processor,selected = eum$Processor[1])
+  # })
+  # 
+  # #Barchart ----
+  # 
+  # output$BarChartIndicator <- renderPlot({
+  #   eum <- eum()
+  #   indicators<-as.vector(unlist((input$indicatorbar)))
+  #   View(indicators)
+  #   class(indicators)
+  #   eumbar<- eum[c("Processor",indicators)]
+  #   View(eumbar)
+  #   eumbar<-filter(eumbar, Processor == input$Processorbar)
+  # 
+  #   barchart <- ggplot (eumbar, aes( x = Processor ,  y = barchar[indicators])) + geom_bar( position="dodge", stat = "identity")
+  #   barchart
+  # })
+    
 
-  output$gaugePlot <- renderPlot({
-    if (input$act==0)
-      return()
-    eum <- eum()
-    eumlevel<-filter(eum,eum$Level == input$LevelIndicator)
-    eumindicator<- eumlevel[c("Processor", input$indicator)]
-    gg.gauge(eumindicator,breaks = c(0,input$break2,input$break3,100))
-    #TODO problem displaying text.. bad visualization of text...
-  }, height = 400, width = 800 ) #this one seems to not change anything
+  
 
   # TAB 7 TREE WITH QUANTITIES -----
   #outputs
